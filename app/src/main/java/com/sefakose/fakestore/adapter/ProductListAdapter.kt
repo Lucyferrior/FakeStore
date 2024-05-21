@@ -13,6 +13,7 @@ import com.sefakose.fakestore.R
 import com.sefakose.fakestore.databinding.ListItemProductBinding
 import com.sefakose.fakestore.databinding.ListItemProductGridBinding
 import com.sefakose.fakestore.model.Product
+import com.sefakose.fakestore.util.downloadURL
 
 class ProductListAdapter(
     var productList: ArrayList<Product>,
@@ -24,7 +25,7 @@ class ProductListAdapter(
             view.apply {
                 tvTitle.text = product.title
                 tvPrice.text = "$".plus(product.price)
-                Glide.with(root).load(product.image).into(imagevProduct)
+                imagevProduct.downloadURL(product.image)
             }
         }
     }

@@ -1,7 +1,5 @@
-package com.sefakose.fakestore.view
+package com.sefakose.fakestore.view.home
 
-import android.adservices.common.AdServicesPermissions
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,11 +14,9 @@ import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.load.resource.bitmap.ByteBufferBitmapImageDecoderResourceDecoder
 import com.sefakose.fakestore.R
 import com.sefakose.fakestore.adapter.ProductListAdapter
 import com.sefakose.fakestore.databinding.FragmentProductListBinding

@@ -1,16 +1,26 @@
 package com.sefakose.fakestore.view
 
+import android.adservices.common.AdServicesPermissions
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.load.resource.bitmap.ByteBufferBitmapImageDecoderResourceDecoder
 import com.sefakose.fakestore.R
 import com.sefakose.fakestore.adapter.ProductListAdapter
 import com.sefakose.fakestore.databinding.FragmentProductListBinding
@@ -33,19 +43,51 @@ class ProductListFragment : Fragment() {
         binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_product_list, container, false
         )
-        binding.rvProductList.layoutManager = LinearLayoutManager(context)
         showToast()
         setObservers()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val menuHost: MenuHost = requireActivity()
+
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.list_fragment_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.grid_switch -> {
+                        viewModel.isGrid.value = (!viewModel.isGrid.value!!)
+                        true
+                    }
+
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     private fun showToast() {
-        Toast.makeText(context,"Daha iyi deneyim için açık tema kullanın",Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "Daha iyi deneyim için açık tema kullanın", Toast.LENGTH_LONG)
+            .show()
     }
 
     private fun setObservers() {
+        viewModel.isGrid.observe(viewLifecycleOwner) {
+            binding.rvProductList.layoutManager = if (it) {
+                GridLayoutManager(context, 2)
+            } else {
+                LinearLayoutManager(context)
+            }
+        }
+
         viewModel.productData.observe(viewLifecycleOwner) { list ->
-            adapter = ProductListAdapter(list) { position: Int ->
+            adapter = ProductListAdapter(list) { position ->
                 findNavController().navigate(
                     ProductListFragmentDirections.actionProductListFragmentToProductDetailsFragment(
                         list[position]
@@ -53,7 +95,9 @@ class ProductListFragment : Fragment() {
                 )
             }
             binding.rvProductList.adapter = adapter
+            adapter.updateList(list)
         }
+
         viewModel.productLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }

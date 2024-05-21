@@ -14,7 +14,7 @@ class ProductListViewModel : ViewModel() {
     val productData = MutableLiveData<ArrayList<Product>>()
     val productLoading = MutableLiveData<Boolean>(false)
     val productError = MutableLiveData<Boolean>(false)
-
+    val isGrid = MutableLiveData<Boolean>(false)
 
     fun getProductsFromAPI() {
         productLoading.value = true
